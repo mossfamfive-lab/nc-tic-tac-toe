@@ -3,15 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NC Tic Tac Toe</title>
+  <title>Barnyard Tic Tac Toe</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;600&display=swap');
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       min-height: 100vh;
@@ -19,78 +15,149 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      /* NC Navy sky fading into Carolina Blue */
-      background: linear-gradient(170deg, #13294B 0%, #1a3f72 45%, #4B9CD3 100%);
+      background: linear-gradient(170deg, #87CEEB 0%, #A8D5A2 55%, #7FB069 100%);
       font-family: 'Inter', sans-serif;
-      color: #f0f4f8;
+      color: #2c1810;
       padding: 1.5rem;
     }
 
-    /* Decorative pine silhouette strip at the bottom */
+    /* Pasture strip at the bottom */
     body::after {
-      content: '🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲';
+      content: '🌾🌻🌾🐄🌾🌻🌾🐓🌾🌻🌾🐄🌾🌻🌾🐓🌾🌻🌾🐄';
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      font-size: 2rem;
-      letter-spacing: -4px;
-      opacity: 0.18;
+      font-size: 1.8rem;
+      letter-spacing: -2px;
+      opacity: 0.25;
       pointer-events: none;
       white-space: nowrap;
       overflow: hidden;
     }
 
-    /* State outline SVG badge */
-    .nc-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.4rem;
-      font-size: 0.75rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #7eb8e8;
-    }
-
-    .nc-badge svg {
-      width: 38px;
-      height: 22px;
-      fill: #4B9CD3;
-      opacity: 0.85;
-    }
-
     h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.6rem;
-      letter-spacing: 2px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.8rem;
+      color: #3D2B1F;
+      text-shadow: 0 3px 0 rgba(255,255,255,0.6), 0 5px 15px rgba(0,0,0,0.12);
       margin-bottom: 0.2rem;
-      color: #ffffff;
-      text-shadow: 0 2px 16px rgba(75, 156, 211, 0.5);
     }
 
     .tagline {
-      font-size: 0.78rem;
-      letter-spacing: 3px;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: #7eb8e8;
-      margin-bottom: 1.6rem;
+      color: #4a6b2a;
+      margin-bottom: 1.8rem;
+      font-weight: 600;
+    }
+
+    /* ===== CHARACTER SELECTION ===== */
+    #select-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .select-prompt {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.4rem;
+      color: #3D2B1F;
+      text-align: center;
+      background: rgba(255,255,255,0.55);
+      padding: 0.5rem 1.4rem;
+      border-radius: 30px;
+      border: 2px solid rgba(255,255,255,0.8);
+    }
+
+    .character-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      justify-content: center;
+      max-width: 500px;
+    }
+
+    .char-card {
+      background: rgba(255, 255, 255, 0.75);
+      border: 3px solid rgba(255,255,255,0.6);
+      border-radius: 18px;
+      padding: 0.9rem 1rem;
+      width: 118px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    .char-card:hover:not(.disabled) {
+      transform: scale(1.09) translateY(-3px);
+      border-color: var(--char-color);
+      box-shadow: 0 6px 22px var(--char-glow);
+    }
+
+    .char-card.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      filter: grayscale(60%);
+    }
+
+    .char-card .char-emoji { font-size: 3rem; display: block; margin-bottom: 0.3rem; }
+    .char-card .char-name  { font-family: 'Fredoka One', cursive; font-size: 1rem; color: #3D2B1F; }
+    .char-card .char-type  { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: #7a6355; }
+
+    /* ===== GAME SCREEN ===== */
+    #game-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .player-banner {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+      align-items: center;
+    }
+
+    .player-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(255,255,255,0.65);
+      border-radius: 30px;
+      padding: 0.4rem 1.1rem;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.05rem;
+      border: 2px solid rgba(255,255,255,0.85);
+      color: #3D2B1F;
+    }
+
+    .player-tag .tag-emoji { font-size: 1.4rem; }
+
+    .vs-badge {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      color: #3D2B1F;
+      opacity: 0.5;
     }
 
     #status {
       font-size: 1.15rem;
-      margin-bottom: 1.4rem;
-      height: 1.7rem;
-      letter-spacing: 0.5px;
-      color: #cce3f5;
+      margin-bottom: 1.2rem;
+      min-height: 1.7rem;
       font-weight: 600;
+      color: #3D2B1F;
+      text-align: center;
       transition: color 0.3s;
     }
 
     #status.winner {
-      color: #C8A951; /* old gold */
-      font-size: 1.35rem;
-      text-shadow: 0 0 12px rgba(200, 169, 81, 0.5);
+      font-size: 1.3rem;
+      color: #7B3F00;
+      text-shadow: 0 0 14px rgba(200, 120, 0, 0.35);
     }
 
     /* Board */
@@ -99,119 +166,131 @@
       grid-template-columns: repeat(3, 110px);
       grid-template-rows: repeat(3, 110px);
       gap: 10px;
-      background: rgba(19, 41, 75, 0.5);
+      background: rgba(101, 67, 33, 0.45);
       padding: 14px;
       border-radius: 18px;
-      border: 1px solid rgba(75, 156, 211, 0.25);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      border: 2px solid rgba(101, 67, 33, 0.3);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
     }
 
     .cell {
       width: 110px;
       height: 110px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 2px solid rgba(75, 156, 211, 0.2);
+      background: rgba(255, 249, 230, 0.8);
+      border: 2px solid rgba(101, 67, 33, 0.18);
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3.2rem;
-      font-weight: bold;
+      font-size: 3.4rem;
       cursor: pointer;
       transition: background 0.2s, transform 0.15s, border-color 0.2s;
       user-select: none;
     }
 
     .cell:hover:not(.taken) {
-      background: rgba(75, 156, 211, 0.14);
-      border-color: rgba(75, 156, 211, 0.55);
-      transform: scale(1.05);
+      background: rgba(255, 249, 230, 1);
+      border-color: rgba(101, 67, 33, 0.45);
+      transform: scale(1.06);
     }
 
     .cell.taken { cursor: default; }
 
-    /* X = Carolina Blue */
-    .cell.x {
-      color: #4B9CD3;
-      text-shadow: 0 0 18px rgba(75, 156, 211, 0.7);
-    }
-
-    /* O = Old Gold (like NC state seal accent) */
-    .cell.o {
-      color: #C8A951;
-      text-shadow: 0 0 18px rgba(200, 169, 81, 0.65);
-    }
-
     .cell.winning {
-      background: rgba(200, 169, 81, 0.18);
-      border-color: #C8A951;
+      background: rgba(255, 215, 80, 0.55);
+      border-color: #D4A843;
+      box-shadow: 0 0 14px rgba(212, 168, 67, 0.6);
       animation: pulse 0.6s ease-in-out infinite alternate;
     }
 
     @keyframes pulse {
       from { transform: scale(1); }
-      to   { transform: scale(1.06); }
+      to   { transform: scale(1.07); }
     }
 
     /* Scoreboard */
     #scoreboard {
       display: flex;
-      gap: 1.4rem;
-      margin-top: 1.8rem;
+      gap: 1rem;
+      margin-top: 1.6rem;
       text-align: center;
     }
 
     .score-box {
-      background: rgba(19, 41, 75, 0.55);
-      border: 1px solid rgba(75, 156, 211, 0.2);
-      border-radius: 12px;
-      padding: 0.7rem 1.4rem;
-      min-width: 82px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 2px solid rgba(255,255,255,0.85);
+      border-radius: 14px;
+      padding: 0.6rem 1rem;
+      min-width: 88px;
       backdrop-filter: blur(4px);
     }
 
     .score-label {
       font-size: 0.7rem;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      color: #7eb8e8;
-      margin-bottom: 0.2rem;
+      color: #7a6355;
+      margin-bottom: 0.15rem;
     }
 
     .score-value {
-      font-size: 1.9rem;
-      font-weight: bold;
+      font-family: 'Fredoka One', cursive;
+      font-size: 2rem;
+      color: #3D2B1F;
     }
 
-    .score-box.x-score .score-value  { color: #4B9CD3; }
-    .score-box.o-score .score-value  { color: #C8A951; }
-    .score-box.tie-score .score-value { color: #aaa; }
-
-    /* Button */
-    #reset-btn {
-      margin-top: 1.6rem;
+    /* Buttons */
+    .btn {
       padding: 0.65rem 2rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      background: transparent;
-      color: #4B9CD3;
-      border: 2px solid #4B9CD3;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      background: #8B5E3C;
+      color: #fff;
+      border: none;
       border-radius: 30px;
       cursor: pointer;
-      transition: background 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 0 #5a3a1f;
     }
 
-    #reset-btn:hover {
-      background: #4B9CD3;
-      color: #13294B;
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(75, 156, 211, 0.4);
+    .btn:hover {
+      background: #A0522D;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #5a3a1f;
     }
 
-    #reset-btn:active { transform: scale(0.97); }
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 0 #5a3a1f;
+    }
+
+    .btn-ghost {
+      margin-top: 0.5rem;
+      background: transparent;
+      color: #8B5E3C;
+      border: 2px solid #8B5E3C;
+      box-shadow: none;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(139, 94, 60, 0.1);
+      transform: translateY(-1px);
+      box-shadow: none;
+    }
+
+    .btn-ghost:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin-top: 1.4rem;
+    }
 
     /* Footer */
     .footer {
@@ -219,114 +298,237 @@
       font-size: 0.68rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
+      color: rgba(61, 43, 31, 0.38);
     }
   </style>
 </head>
 <body>
 
-  <!-- NC state silhouette (simplified SVG path) -->
-  <div class="nc-badge">
-    <svg viewBox="0 0 120 55" xmlns="http://www.w3.org/2000/svg">
-      <!-- Rough NC state outline shape -->
-      <path d="M2,18 L8,14 L18,12 L30,10 L45,8 L60,7 L75,8 L90,9 L105,10 L115,12
-               L118,15 L116,20 L112,25 L108,28 L105,32 L100,35 L94,38 L88,40
-               L80,42 L72,44 L65,46 L58,48 L50,47 L42,45 L34,43 L26,40
-               L18,36 L10,30 L4,24 Z"/>
-    </svg>
-    The Old North State
-  </div>
+  <h1>🐾 Barnyard Tic Tac Toe</h1>
+  <div class="tagline">Pick your animal · Down on the farm</div>
 
-  <h1>Tic Tac Toe</h1>
-  <div class="tagline">🌲 Carolina Style &nbsp;·&nbsp; Est. 1789 🌲</div>
-
-  <div id="status">⚡ Tar Heel X goes first!</div>
-
-  <div id="board">
-    <div class="cell" data-index="0"></div>
-    <div class="cell" data-index="1"></div>
-    <div class="cell" data-index="2"></div>
-    <div class="cell" data-index="3"></div>
-    <div class="cell" data-index="4"></div>
-    <div class="cell" data-index="5"></div>
-    <div class="cell" data-index="6"></div>
-    <div class="cell" data-index="7"></div>
-    <div class="cell" data-index="8"></div>
-  </div>
-
-  <div id="scoreboard">
-    <div class="score-box x-score">
-      <div class="score-label">🔵 X Wins</div>
-      <div class="score-value" id="score-x">0</div>
-    </div>
-    <div class="score-box tie-score">
-      <div class="score-label">🤝 Ties</div>
-      <div class="score-value" id="score-tie">0</div>
-    </div>
-    <div class="score-box o-score">
-      <div class="score-label">🟡 O Wins</div>
-      <div class="score-value" id="score-o">0</div>
+  <!-- ===== Character Selection ===== -->
+  <div id="select-screen">
+    <div class="select-prompt" id="select-prompt">🌾 Player 1 — Pick your animal!</div>
+    <div class="character-grid" id="character-grid">
+      <!-- injected by JS -->
     </div>
   </div>
 
-  <button id="reset-btn">🔄 New Game</button>
+  <!-- ===== Game Screen ===== -->
+  <div id="game-screen">
+    <div class="player-banner">
+      <div class="player-tag">
+        <span class="tag-emoji" id="p1-emoji"></span>
+        <span id="p1-name"></span>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="player-tag">
+        <span class="tag-emoji" id="p2-emoji"></span>
+        <span id="p2-name"></span>
+      </div>
+    </div>
 
-  <div class="footer">Chapel Hill &nbsp;·&nbsp; Raleigh &nbsp;·&nbsp; Charlotte &nbsp;·&nbsp; Asheville</div>
+    <div id="status"></div>
+
+    <div id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+
+    <div id="scoreboard">
+      <div class="score-box">
+        <div class="score-label" id="s1-label">Player 1</div>
+        <div class="score-value" id="score-p1">0</div>
+      </div>
+      <div class="score-box">
+        <div class="score-label">🤝 Ties</div>
+        <div class="score-value" id="score-tie">0</div>
+      </div>
+      <div class="score-box">
+        <div class="score-label" id="s2-label">Player 2</div>
+        <div class="score-value" id="score-p2">0</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="reset-btn">🔄 New Round</button>
+      <button class="btn btn-ghost" id="reselect-btn">🐾 Change Animals</button>
+    </div>
+
+    <div class="footer">Every animal deserves a turn</div>
+  </div>
 
   <script>
+    const CHARACTERS = [
+      {
+        id: 'adeline', name: 'Adeline', animal: 'Dog',
+        emoji: '🐕', color: '#8B5E3C', glow: 'rgba(139,94,60,0.5)'
+      },
+      {
+        id: 'elena', name: 'Elena', animal: 'Alpaca',
+        emoji: '🦙', color: '#5A9E6F', glow: 'rgba(90,158,111,0.5)'
+      },
+      {
+        id: 'alex', name: 'Alex', animal: 'Pig',
+        emoji: '🐷', color: '#E07DAA', glow: 'rgba(224,125,170,0.5)'
+      },
+      {
+        id: 'brittany', name: 'Brittany', animal: 'Horse',
+        emoji: '🐴', color: '#C86B3C', glow: 'rgba(200,107,60,0.5)'
+      },
+      {
+        id: 'lily', name: 'Lily', animal: 'Kitten',
+        emoji: '🐱', color: '#9B8EA5', glow: 'rgba(155,142,165,0.5)'
+      },
+    ];
+
+    const WIN_MSGS = {
+      adeline:  ['🐕 Adeline wins! Who\'s a good girl?!', '🦴 Adeline fetches the victory!', '🐾 Top dog Adeline takes it!'],
+      elena:    ['🦙 Elena wins! Spit take!', '🌿 Elena chews through the competition!', '🦙 Elena alpaca-punches her way to victory!'],
+      alex:     ['🐷 Alex wins! Oink oink!', '🥓 Alex brings home the bacon!', '🐷 Alex rolls right into victory!'],
+      brittany: ['🐴 Brittany wins! Neigh-borly domination!', '🌟 Brittany gallops to glory!', '🏆 Brittany leads the whole herd!'],
+      lily:     ['🐱 Lily wins! Purr-fect play!', '🐾 Lily is the cat\'s meow!', '🎀 Lily always lands on her feet!'],
+    };
+
     const WINNING_COMBOS = [
       [0,1,2],[3,4,5],[6,7,8],
       [0,3,6],[1,4,7],[2,5,8],
       [0,4,8],[2,4,6]
     ];
 
-    const WIN_MSGS = {
-      X: ['🔵 Tar Heel X wins! Go Heels!', '💙 X takes it — Carolina proud!', '⚡ X wins! Blue rules the Old North State!'],
-      O: ['🟡 Player O wins! Golden glory!', '✨ O takes it — golden victory!', '🏆 O wins! Shine on, Old North State!']
-    };
+    // State
+    let players        = [null, null];  // selected CHARACTERS entries
+    let selectingP     = 0;             // 0 = P1 choosing, 1 = P2 choosing
+    let board          = Array(9).fill(null);
+    let currentPlayer  = 0;
+    let gameOver       = false;
+    let scores         = [0, 0, 0];    // [p1, p2, ties]
 
-    let board = Array(9).fill(null);
-    let currentPlayer = 'X';
-    let gameOver = false;
-    const scores = { X: 0, O: 0, tie: 0 };
+    // Elements
+    const selectScreen = document.getElementById('select-screen');
+    const gameScreen   = document.getElementById('game-screen');
+    const selectPrompt = document.getElementById('select-prompt');
+    const charGrid     = document.getElementById('character-grid');
+    const statusEl     = document.getElementById('status');
+    const cells        = document.querySelectorAll('.cell');
+    const resetBtn     = document.getElementById('reset-btn');
+    const reselectBtn  = document.getElementById('reselect-btn');
+    const scoreP1El    = document.getElementById('score-p1');
+    const scoreP2El    = document.getElementById('score-p2');
+    const scoreTieEl   = document.getElementById('score-tie');
+    const s1Label      = document.getElementById('s1-label');
+    const s2Label      = document.getElementById('s2-label');
 
-    const cells     = document.querySelectorAll('.cell');
-    const statusEl  = document.getElementById('status');
-    const resetBtn  = document.getElementById('reset-btn');
-    const scoreX    = document.getElementById('score-x');
-    const scoreO    = document.getElementById('score-o');
-    const scoreTie  = document.getElementById('score-tie');
+    // ── Character selection ──────────────────────────────────────
+    function buildGrid() {
+      charGrid.innerHTML = '';
+      CHARACTERS.forEach(char => {
+        const taken = selectingP === 1 && players[0] && players[0].id === char.id;
+        const card = document.createElement('div');
+        card.className = 'char-card' + (taken ? ' disabled' : '');
+        card.style.setProperty('--char-color', char.color);
+        card.style.setProperty('--char-glow', char.glow);
+        card.innerHTML = `
+          <span class="char-emoji">${char.emoji}</span>
+          <div class="char-name">${char.name}</div>
+          <div class="char-type">${char.animal}</div>
+        `;
+        if (!taken) card.addEventListener('click', () => selectChar(char));
+        charGrid.appendChild(card);
+      });
+    }
 
+    function selectChar(char) {
+      players[selectingP] = char;
+      if (selectingP === 0) {
+        selectingP = 1;
+        selectPrompt.textContent = '🌻 Player 2 — Pick your animal!';
+        buildGrid();
+      } else {
+        startGame();
+      }
+    }
+
+    // ── Game start ────────────────────────────────────────────────
+    function startGame() {
+      selectScreen.style.display = 'none';
+      gameScreen.style.display   = 'flex';
+
+      document.getElementById('p1-emoji').textContent = players[0].emoji;
+      document.getElementById('p1-name').textContent  = players[0].name;
+      document.getElementById('p2-emoji').textContent = players[1].emoji;
+      document.getElementById('p2-name').textContent  = players[1].name;
+
+      s1Label.textContent = `${players[0].emoji} ${players[0].name}`;
+      s2Label.textContent = `${players[1].emoji} ${players[1].name}`;
+
+      resetRound();
+    }
+
+    // ── Round reset (keeps scores) ────────────────────────────────
+    function resetRound() {
+      board         = Array(9).fill(null);
+      currentPlayer = 0;
+      gameOver      = false;
+      cells.forEach(c => { c.textContent = ''; c.className = 'cell'; });
+      const p = players[0];
+      statusEl.textContent = `${p.emoji} ${p.name} goes first!`;
+      statusEl.className   = '';
+    }
+
+    // ── Back to character select ──────────────────────────────────
+    function goReselect() {
+      players    = [null, null];
+      selectingP = 0;
+      scores     = [0, 0, 0];
+      scoreP1El.textContent  = '0';
+      scoreP2El.textContent  = '0';
+      scoreTieEl.textContent = '0';
+      selectPrompt.textContent   = '🌾 Player 1 — Pick your animal!';
+      gameScreen.style.display   = 'none';
+      selectScreen.style.display = 'flex';
+      buildGrid();
+    }
+
+    // ── Game logic ────────────────────────────────────────────────
     cells.forEach(cell => cell.addEventListener('click', handleClick));
-    resetBtn.addEventListener('click', resetGame);
+    resetBtn.addEventListener('click', resetRound);
+    reselectBtn.addEventListener('click', goReselect);
 
     function handleClick(e) {
       const idx = parseInt(e.target.dataset.index);
-      if (gameOver || board[idx]) return;
+      if (gameOver || board[idx] !== null) return;
 
       board[idx] = currentPlayer;
       const cell = e.target;
-      cell.textContent = currentPlayer;
-      cell.classList.add('taken', currentPlayer.toLowerCase());
+      cell.textContent = players[currentPlayer].emoji;
+      cell.classList.add('taken', `p${currentPlayer}`);
 
-      const winner = checkWinner();
-      if (winner) {
-        endGame(winner.player, winner.combo);
-      } else if (board.every(Boolean)) {
-        endGame(null);
+      const result = checkWinner();
+      if (result) {
+        endGame(result.player, result.combo);
+      } else if (board.every(v => v !== null)) {
+        endGame(null, null);
       } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        statusEl.textContent = currentPlayer === 'X'
-          ? '🔵 Player X\'s turn — Go Heels!'
-          : '🟡 Player O\'s turn — Shine on!';
-        statusEl.className = '';
+        currentPlayer = currentPlayer === 0 ? 1 : 0;
+        const p = players[currentPlayer];
+        statusEl.textContent = `${p.emoji} ${p.name}'s turn!`;
+        statusEl.className   = '';
       }
     }
 
     function checkWinner() {
       for (const combo of WINNING_COMBOS) {
         const [a, b, c] = combo;
-        if (board[a] && board[a] === board[b] && board[a] === board[c])
+        if (board[a] !== null && board[a] === board[b] && board[a] === board[c])
           return { player: board[a], combo };
       }
       return null;
@@ -334,34 +536,26 @@
 
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-    function endGame(winner, combo) {
+    function endGame(winnerIdx, combo) {
       gameOver = true;
-      if (winner) {
-        statusEl.textContent = pick(WIN_MSGS[winner]);
-        statusEl.className = 'winner';
+      if (winnerIdx !== null) {
+        const char = players[winnerIdx];
+        statusEl.textContent = pick(WIN_MSGS[char.id]);
+        statusEl.className   = 'winner';
         combo.forEach(i => cells[i].classList.add('winning'));
-        scores[winner]++;
+        scores[winnerIdx]++;
       } else {
-        statusEl.textContent = '🤝 It\'s a tie — like a Carolina sunset!';
-        statusEl.className = 'winner';
-        scores.tie++;
+        statusEl.textContent = '🤝 It\'s a tie — the barnyard draws!';
+        statusEl.className   = 'winner';
+        scores[2]++;
       }
-      scoreX.textContent   = scores.X;
-      scoreO.textContent   = scores.O;
-      scoreTie.textContent = scores.tie;
+      scoreP1El.textContent  = scores[0];
+      scoreP2El.textContent  = scores[1];
+      scoreTieEl.textContent = scores[2];
     }
 
-    function resetGame() {
-      board = Array(9).fill(null);
-      currentPlayer = 'X';
-      gameOver = false;
-      cells.forEach(cell => {
-        cell.textContent = '';
-        cell.className = 'cell';
-      });
-      statusEl.textContent = '⚡ Tar Heel X goes first!';
-      statusEl.className = '';
-    }
+    // ── Init ──────────────────────────────────────────────────────
+    buildGrid();
   </script>
 </body>
 </html>
