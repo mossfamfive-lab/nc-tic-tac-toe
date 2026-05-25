@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NC Tic Tac Toe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      /* NC Navy sky fading into Carolina Blue */
+      background: linear-gradient(170deg, #13294B 0%, #1a3f72 45%, #4B9CD3 100%);
+      font-family: 'Inter', sans-serif;
+      color: #f0f4f8;
+      padding: 1.5rem;
+    }
+
+    /* Decorative pine silhouette strip at the bottom */
+    body::after {
+      content: '🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲🌲';
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      font-size: 2rem;
+      letter-spacing: -4px;
+      opacity: 0.18;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* State outline SVG badge */
+    .nc-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #7eb8e8;
+    }
+
+    .nc-badge svg {
+      width: 38px;
+      height: 22px;
+      fill: #4B9CD3;
+      opacity: 0.85;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.2rem;
+      color: #ffffff;
+      text-shadow: 0 2px 16px rgba(75, 156, 211, 0.5);
+    }
+
+    .tagline {
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #7eb8e8;
+      margin-bottom: 1.6rem;
+    }
+
+    #status {
+      font-size: 1.15rem;
+      margin-bottom: 1.4rem;
+      height: 1.7rem;
+      letter-spacing: 0.5px;
+      color: #cce3f5;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    #status.winner {
+      color: #C8A951; /* old gold */
+      font-size: 1.35rem;
+      text-shadow: 0 0 12px rgba(200, 169, 81, 0.5);
+    }
+
+    /* Board */
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 110px);
+      grid-template-rows: repeat(3, 110px);
+      gap: 10px;
+      background: rgba(19, 41, 75, 0.5);
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(75, 156, 211, 0.25);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+
+    .cell {
+      width: 110px;
+      height: 110px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid rgba(75, 156, 211, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, border-color 0.2s;
+      user-select: none;
+    }
+
+    .cell:hover:not(.taken) {
+      background: rgba(75, 156, 211, 0.14);
+      border-color: rgba(75, 156, 211, 0.55);
+      transform: scale(1.05);
+    }
+
+    .cell.taken { cursor: default; }
+
+    /* X = Carolina Blue */
+    .cell.x {
+      color: #4B9CD3;
+      text-shadow: 0 0 18px rgba(75, 156, 211, 0.7);
+    }
+
+    /* O = Old Gold (like NC state seal accent) */
+    .cell.o {
+      color: #C8A951;
+      text-shadow: 0 0 18px rgba(200, 169, 81, 0.65);
+    }
+
+    .cell.winning {
+      background: rgba(200, 169, 81, 0.18);
+      border-color: #C8A951;
+      animation: pulse 0.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to   { transform: scale(1.06); }
+    }
+
+    /* Scoreboard */
+    #scoreboard {
+      display: flex;
+      gap: 1.4rem;
+      margin-top: 1.8rem;
+      text-align: center;
+    }
+
+    .score-box {
+      background: rgba(19, 41, 75, 0.55);
+      border: 1px solid rgba(75, 156, 211, 0.2);
+      border-radius: 12px;
+      padding: 0.7rem 1.4rem;
+      min-width: 82px;
+      backdrop-filter: blur(4px);
+    }
+
+    .score-label {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #7eb8e8;
+      margin-bottom: 0.2rem;
+    }
+
+    .score-value {
+      font-size: 1.9rem;
+      font-weight: bold;
+    }
+
+    .score-box.x-score .score-value  { color: #4B9CD3; }
+    .score-box.o-score .score-value  { color: #C8A951; }
+    .score-box.tie-score .score-value { color: #aaa; }
+
+    /* Button */
+    #reset-btn {
+      margin-top: 1.6rem;
+      padding: 0.65rem 2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: transparent;
+      color: #4B9CD3;
+      border: 2px solid #4B9CD3;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
+    }
+
+    #reset-btn:hover {
+      background: #4B9CD3;
+      color: #13294B;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(75, 156, 211, 0.4);
+    }
+
+    #reset-btn:active { transform: scale(0.97); }
+
+    /* Footer */
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NC state silhouette (simplified SVG path) -->
+  <div class="nc-badge">
+    <svg viewBox="0 0 120 55" xmlns="http://www.w3.org/2000/svg">
+      <!-- Rough NC state outline shape -->
+      <path d="M2,18 L8,14 L18,12 L30,10 L45,8 L60,7 L75,8 L90,9 L105,10 L115,12
+               L118,15 L116,20 L112,25 L108,28 L105,32 L100,35 L94,38 L88,40
+               L80,42 L72,44 L65,46 L58,48 L50,47 L42,45 L34,43 L26,40
+               L18,36 L10,30 L4,24 Z"/>
+    </svg>
+    The Old North State
+  </div>
+
+  <h1>Tic Tac Toe</h1>
+  <div class="tagline">🌲 Carolina Style &nbsp;·&nbsp; Est. 1789 🌲</div>
+
+  <div id="status">⚡ Tar Heel X goes first!</div>
+
+  <div id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+
+  <div id="scoreboard">
+    <div class="score-box x-score">
+      <div class="score-label">🔵 X Wins</div>
+      <div class="score-value" id="score-x">0</div>
+    </div>
+    <div class="score-box tie-score">
+      <div class="score-label">🤝 Ties</div>
+      <div class="score-value" id="score-tie">0</div>
+    </div>
+    <div class="score-box o-score">
+      <div class="score-label">🟡 O Wins</div>
+      <div class="score-value" id="score-o">0</div>
+    </div>
+  </div>
+
+  <button id="reset-btn">🔄 New Game</button>
+
+  <div class="footer">Chapel Hill &nbsp;·&nbsp; Raleigh &nbsp;·&nbsp; Charlotte &nbsp;·&nbsp; Asheville</div>
+
+  <script>
+    const WINNING_COMBOS = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+
+    const WIN_MSGS = {
+      X: ['🔵 Tar Heel X wins! Go Heels!', '💙 X takes it — Carolina proud!', '⚡ X wins! Blue rules the Old North State!'],
+      O: ['🟡 Player O wins! Golden glory!', '✨ O takes it — golden victory!', '🏆 O wins! Shine on, Old North State!']
+    };
+
+    let board = Array(9).fill(null);
+    let currentPlayer = 'X';
+    let gameOver = false;
+    const scores = { X: 0, O: 0, tie: 0 };
+
+    const cells     = document.querySelectorAll('.cell');
+    const statusEl  = document.getElementById('status');
+    const resetBtn  = document.getElementById('reset-btn');
+    const scoreX    = document.getElementById('score-x');
+    const scoreO    = document.getElementById('score-o');
+    const scoreTie  = document.getElementById('score-tie');
+
+    cells.forEach(cell => cell.addEventListener('click', handleClick));
+    resetBtn.addEventListener('click', resetGame);
+
+    function handleClick(e) {
+      const idx = parseInt(e.target.dataset.index);
+      if (gameOver || board[idx]) return;
+
+      board[idx] = currentPlayer;
+      const cell = e.target;
+      cell.textContent = currentPlayer;
+      cell.classList.add('taken', currentPlayer.toLowerCase());
+
+      const winner = checkWinner();
+      if (winner) {
+        endGame(winner.player, winner.combo);
+      } else if (board.every(Boolean)) {
+        endGame(null);
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        statusEl.textContent = currentPlayer === 'X'
+          ? '🔵 Player X\'s turn — Go Heels!'
+          : '🟡 Player O\'s turn — Shine on!';
+        statusEl.className = '';
+      }
+    }
+
+    function checkWinner() {
+      for (const combo of WINNING_COMBOS) {
+        const [a, b, c] = combo;
+        if (board[a] && board[a] === board[b] && board[a] === board[c])
+          return { player: board[a], combo };
+      }
+      return null;
+    }
+
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function endGame(winner, combo) {
+      gameOver = true;
+      if (winner) {
+        statusEl.textContent = pick(WIN_MSGS[winner]);
+        statusEl.className = 'winner';
+        combo.forEach(i => cells[i].classList.add('winning'));
+        scores[winner]++;
+      } else {
+        statusEl.textContent = '🤝 It\'s a tie — like a Carolina sunset!';
+        statusEl.className = 'winner';
+        scores.tie++;
+      }
+      scoreX.textContent   = scores.X;
+      scoreO.textContent   = scores.O;
+      scoreTie.textContent = scores.tie;
+    }
+
+    function resetGame() {
+      board = Array(9).fill(null);
+      currentPlayer = 'X';
+      gameOver = false;
+      cells.forEach(cell => {
+        cell.textContent = '';
+        cell.className = 'cell';
+      });
+      statusEl.textContent = '⚡ Tar Heel X goes first!';
+      statusEl.className = '';
+    }
+  </script>
+</body>
+</html>
