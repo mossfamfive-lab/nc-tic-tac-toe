@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barnyard Tic Tac Toe</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Barnyard Games</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;600&display=swap');
 
@@ -21,39 +21,61 @@
       padding: 1.5rem;
     }
 
-    /* Pasture strip at the bottom */
     body::after {
       content: '🌾🌻🌾🐄🌾🌻🌾🐓🌾🌻🌾🐄🌾🌻🌾🐓🌾🌻🌾🐄';
       position: fixed;
-      bottom: 0;
-      left: 0;
+      bottom: 0; left: 0;
       width: 100%;
       font-size: 1.8rem;
       letter-spacing: -2px;
-      opacity: 0.25;
+      opacity: 0.22;
       pointer-events: none;
       white-space: nowrap;
       overflow: hidden;
     }
 
+    /* ── Header ── */
     h1 {
       font-family: 'Fredoka One', cursive;
-      font-size: 2.8rem;
+      font-size: 2.6rem;
       color: #3D2B1F;
       text-shadow: 0 3px 0 rgba(255,255,255,0.6), 0 5px 15px rgba(0,0,0,0.12);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.6rem;
     }
 
-    .tagline {
-      font-size: 0.8rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #4a6b2a;
-      margin-bottom: 1.8rem;
-      font-weight: 600;
+    /* ── Game tabs ── */
+    .game-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+      background: rgba(255,255,255,0.35);
+      padding: 4px;
+      border-radius: 30px;
+      border: 2px solid rgba(255,255,255,0.6);
     }
 
-    /* ===== CHARACTER SELECTION ===== */
+    .tab-btn {
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.95rem;
+      padding: 0.4rem 1.3rem;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      background: transparent;
+      color: #5a3a1f;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .tab-btn.active {
+      background: #8B5E3C;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(139,94,60,0.35);
+    }
+
+    .tab-btn:not(.active):hover { background: rgba(255,255,255,0.5); }
+
+    /* ── Shared: character select ── */
     #select-screen {
       display: flex;
       flex-direction: column;
@@ -63,7 +85,7 @@
 
     .select-prompt {
       font-family: 'Fredoka One', cursive;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       color: #3D2B1F;
       text-align: center;
       background: rgba(255,255,255,0.55);
@@ -75,17 +97,17 @@
     .character-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.9rem;
+      gap: 0.8rem;
       justify-content: center;
-      max-width: 500px;
+      max-width: 560px;
     }
 
     .char-card {
-      background: rgba(255, 255, 255, 0.75);
+      background: rgba(255,255,255,0.75);
       border: 3px solid rgba(255,255,255,0.6);
       border-radius: 18px;
-      padding: 0.9rem 1rem;
-      width: 118px;
+      padding: 0.8rem 0.9rem;
+      width: 108px;
       text-align: center;
       cursor: pointer;
       transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
@@ -98,18 +120,14 @@
       box-shadow: 0 6px 22px var(--char-glow);
     }
 
-    .char-card.disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-      filter: grayscale(60%);
-    }
+    .char-card.disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(60%); }
 
-    .char-card .char-emoji { font-size: 3rem; display: block; margin-bottom: 0.3rem; }
-    .char-card .char-name  { font-family: 'Fredoka One', cursive; font-size: 1rem; color: #3D2B1F; }
-    .char-card .char-type  { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: #7a6355; }
+    .char-card .char-emoji { font-size: 2.8rem; display: block; margin-bottom: 0.3rem; }
+    .char-card .char-name  { font-family: 'Fredoka One', cursive; font-size: 0.92rem; color: #3D2B1F; }
+    .char-card .char-type  { font-size: 0.63rem; text-transform: uppercase; letter-spacing: 1.5px; color: #7a6355; }
 
-    /* ===== GAME SCREEN ===== */
-    #game-screen {
+    /* ── Shared: game screens ── */
+    .game-screen {
       display: none;
       flex-direction: column;
       align-items: center;
@@ -118,7 +136,7 @@
     .player-banner {
       display: flex;
       gap: 1rem;
-      margin-bottom: 0.9rem;
+      margin-bottom: 0.8rem;
       align-items: center;
     }
 
@@ -130,137 +148,56 @@
       border-radius: 30px;
       padding: 0.4rem 1.1rem;
       font-family: 'Fredoka One', cursive;
-      font-size: 1.05rem;
+      font-size: 1rem;
       border: 2px solid rgba(255,255,255,0.85);
       color: #3D2B1F;
+      transition: box-shadow 0.25s;
     }
 
-    .player-tag .tag-emoji { font-size: 1.4rem; }
+    .player-tag.active-turn { box-shadow: 0 0 0 3px #D4A843; }
+    .player-tag .tag-emoji  { font-size: 1.35rem; }
 
-    .vs-badge {
-      font-family: 'Fredoka One', cursive;
+    .vs-badge { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: #3D2B1F; opacity: 0.45; }
+
+    .game-status {
       font-size: 1.1rem;
-      color: #3D2B1F;
-      opacity: 0.5;
-    }
-
-    #status {
-      font-size: 1.15rem;
-      margin-bottom: 1.2rem;
-      min-height: 1.7rem;
+      margin-bottom: 0.9rem;
+      min-height: 1.6rem;
       font-weight: 600;
       color: #3D2B1F;
       text-align: center;
       transition: color 0.3s;
     }
 
-    #status.winner {
-      font-size: 1.3rem;
+    .game-status.winner {
+      font-size: 1.25rem;
       color: #7B3F00;
-      text-shadow: 0 0 14px rgba(200, 120, 0, 0.35);
+      text-shadow: 0 0 14px rgba(200,120,0,0.35);
     }
 
-    /* Board */
-    #board {
-      display: grid;
-      grid-template-columns: repeat(3, 110px);
-      grid-template-rows: repeat(3, 110px);
-      gap: 10px;
-      background: rgba(101, 67, 33, 0.45);
-      padding: 14px;
-      border-radius: 18px;
-      border: 2px solid rgba(101, 67, 33, 0.3);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-    }
-
-    .cell {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      background: rgba(255, 249, 230, 0.8);
-      border: 2px solid rgba(101, 67, 33, 0.18);
-      border-radius: 12px;
+    .scoreboard {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3.4rem;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s, border-color 0.2s;
-      user-select: none;
-    }
-
-    /* Key-hint labels shown in empty cells */
-    .hint {
-      position: absolute;
-      font-size: 0.6rem;
-      font-weight: 700;
-      font-family: 'Inter', monospace;
-      pointer-events: none;
-      opacity: 0.32;
-      line-height: 1;
-      letter-spacing: 0;
-    }
-    .h1 { top: 5px;    left: 6px;  color: #3a5e20; } /* P1 — top-left,     green */
-    .h2 { bottom: 5px; right: 6px; color: #8B5E3C; } /* P2 — bottom-right, brown */
-    .cell.taken .hint { display: none; }
-
-    .cell:hover:not(.taken) {
-      background: rgba(255, 249, 230, 1);
-      border-color: rgba(101, 67, 33, 0.45);
-      transform: scale(1.06);
-    }
-
-    .cell.taken { cursor: default; }
-
-    .cell.winning {
-      background: rgba(255, 215, 80, 0.55);
-      border-color: #D4A843;
-      box-shadow: 0 0 14px rgba(212, 168, 67, 0.6);
-      animation: pulse 0.6s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to   { transform: scale(1.07); }
-    }
-
-    /* Scoreboard */
-    #scoreboard {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.6rem;
+      gap: 0.9rem;
+      margin-top: 1.3rem;
       text-align: center;
     }
 
     .score-box {
-      background: rgba(255, 255, 255, 0.58);
+      background: rgba(255,255,255,0.58);
       border: 2px solid rgba(255,255,255,0.85);
       border-radius: 14px;
-      padding: 0.6rem 1rem;
-      min-width: 88px;
+      padding: 0.5rem 0.9rem;
+      min-width: 84px;
       backdrop-filter: blur(4px);
     }
 
-    .score-label {
-      font-size: 0.7rem;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: #7a6355;
-      margin-bottom: 0.15rem;
-    }
+    .score-label { font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: #7a6355; margin-bottom: 0.1rem; }
+    .score-value { font-family: 'Fredoka One', cursive; font-size: 1.9rem; color: #3D2B1F; }
 
-    .score-value {
-      font-family: 'Fredoka One', cursive;
-      font-size: 2rem;
-      color: #3D2B1F;
-    }
-
-    /* Buttons */
     .btn {
-      padding: 0.65rem 2rem;
+      padding: 0.6rem 1.9rem;
       font-family: 'Fredoka One', cursive;
       font-size: 1rem;
-      letter-spacing: 0.5px;
       background: #8B5E3C;
       color: #fff;
       border: none;
@@ -270,16 +207,8 @@
       box-shadow: 0 4px 0 #5a3a1f;
     }
 
-    .btn:hover {
-      background: #A0522D;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 0 #5a3a1f;
-    }
-
-    .btn:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 0 #5a3a1f;
-    }
+    .btn:hover { background: #A0522D; transform: translateY(-2px); box-shadow: 0 6px 0 #5a3a1f; }
+    .btn:active { transform: translateY(1px); box-shadow: 0 2px 0 #5a3a1f; }
 
     .btn-ghost {
       margin-top: 0.5rem;
@@ -289,107 +218,218 @@
       box-shadow: none;
     }
 
-    .btn-ghost:hover {
-      background: rgba(139, 94, 60, 0.1);
-      transform: translateY(-1px);
-      box-shadow: none;
-    }
+    .btn-ghost:hover { background: rgba(139,94,60,0.1); transform: translateY(-1px); box-shadow: none; }
+    .btn-ghost:active { transform: translateY(0); box-shadow: none; }
 
-    .btn-ghost:active {
-      transform: translateY(0);
-      box-shadow: none;
-    }
+    .btn-row { display: flex; flex-direction: column; align-items: center; gap: 0; margin-top: 1.1rem; }
 
-    .btn-row {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-      margin-top: 1.4rem;
-    }
-
-    /* Keyboard legend */
     .kb-legend {
-      margin-top: 0.9rem;
-      font-size: 0.68rem;
+      margin-top: 0.8rem;
+      font-size: 0.67rem;
       display: flex;
       gap: 0.5rem;
       align-items: center;
       opacity: 0.75;
     }
-    .kb-p1  { color: #3a5e20; font-weight: 700; letter-spacing: 0.5px; }
-    .kb-p2  { color: #8B5E3C; font-weight: 700; letter-spacing: 0.5px; }
+
+    .kb-p1  { color: #3a5e20; font-weight: 700; letter-spacing: 0.4px; }
+    .kb-p2  { color: #8B5E3C; font-weight: 700; letter-spacing: 0.4px; }
     .kb-sep { color: rgba(61,43,31,0.35); }
 
-    /* Footer */
-    .footer {
-      margin-top: 1.2rem;
-      font-size: 0.68rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(61, 43, 31, 0.38);
+    .footer { margin-top: 0.9rem; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(61,43,31,0.35); }
+
+    /* ═══ TTT-specific ═══ */
+    #ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 9px;
+      background: rgba(101,67,33,0.45);
+      padding: 12px;
+      border-radius: 18px;
+      border: 2px solid rgba(101,67,33,0.3);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
     }
+
+    .ttt-cell {
+      position: relative;
+      width: 100px; height: 100px;
+      background: rgba(255,249,230,0.82);
+      border: 2px solid rgba(101,67,33,0.18);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.14s, border-color 0.18s;
+      user-select: none;
+    }
+
+    .ttt-cell:hover:not(.taken) {
+      background: rgba(255,249,230,1);
+      border-color: rgba(101,67,33,0.45);
+      transform: scale(1.06);
+    }
+
+    .ttt-cell.taken { cursor: default; }
+
+    .ttt-cell.winning {
+      background: rgba(255,215,80,0.55);
+      border-color: #D4A843;
+      box-shadow: 0 0 14px rgba(212,168,67,0.6);
+      animation: pulse 0.6s ease-in-out infinite alternate;
+    }
+
+    .hint {
+      position: absolute;
+      font-size: 0.57rem;
+      font-weight: 700;
+      font-family: 'Inter', monospace;
+      pointer-events: none;
+      opacity: 0.28;
+      line-height: 1;
+    }
+
+    .h1 { top: 4px; left: 5px; color: #3a5e20; }
+    .h2 { bottom: 4px; right: 5px; color: #8B5E3C; }
+    .ttt-cell.taken .hint { display: none; }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to   { transform: scale(1.07); }
+    }
+
+    /* ═══ Connect Four ═══ */
+
+    /* Preview row above the board */
+    #c4-preview {
+      display: grid;
+      grid-template-columns: repeat(7, 56px);
+      gap: 5px;
+      padding: 0 12px;
+      margin-bottom: 3px;
+    }
+
+    .c4-prev-slot {
+      width: 56px; height: 32px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 1.35rem; line-height: 1;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.14s;
+      user-select: none;
+    }
+
+    .c4-prev-slot:hover,
+    .c4-prev-slot.cursor-here { background: rgba(255,255,255,0.38); }
+
+    .c4-prev-slot .drop-arr { font-size: 0.6rem; opacity: 0.55; line-height: 1; }
+    .c4-prev-slot.col-full  { opacity: 0.3; cursor: not-allowed; }
+
+    /* Board */
+    #c4-board {
+      display: grid;
+      grid-template-columns: repeat(7, 56px);
+      grid-template-rows: repeat(6, 56px);
+      gap: 5px;
+      background: rgba(101,67,33,0.5);
+      padding: 12px;
+      border-radius: 18px;
+      border: 2px solid rgba(101,67,33,0.3);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+    }
+
+    .c4-cell {
+      width: 56px; height: 56px;
+      background: rgba(255,249,230,0.78);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: background 0.14s;
+      user-select: none;
+    }
+
+    .c4-cell:hover                   { background: rgba(255,249,230,0.96); }
+    .c4-cell.col-hi:not(.filled)     { background: rgba(255,249,230,0.96); }
+    .c4-cell.filled                  { cursor: default; background: rgba(255,249,230,0.88); }
+
+    .c4-cell.winning {
+      background: rgba(255,215,80,0.7);
+      box-shadow: 0 0 14px rgba(212,168,67,0.7);
+      animation: pulse 0.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes drop-in {
+      0%   { transform: scale(0.35); opacity: 0.5; }
+      65%  { transform: scale(1.2); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+
+    .c4-cell.dropping { animation: drop-in 0.22s ease-out forwards; }
   </style>
 </head>
 <body>
 
-  <h1>🐾 Barnyard Tic Tac Toe</h1>
-  <div class="tagline">Pick your animal · Down on the farm</div>
+  <h1>🐾 Barnyard Games</h1>
 
-  <!-- ===== Character Selection ===== -->
-  <div id="select-screen">
-    <div class="select-prompt" id="select-prompt">🌾 Player 1 — Pick your animal!</div>
-    <div class="character-grid" id="character-grid">
-      <!-- injected by JS -->
-    </div>
+  <div class="game-tabs">
+    <button class="tab-btn active" id="tab-ttt">🎯 Tic Tac Toe</button>
+    <button class="tab-btn"        id="tab-c4" >🔴 Connect Four</button>
   </div>
 
-  <!-- ===== Game Screen ===== -->
-  <div id="game-screen">
+  <!-- ===== Shared: Character Selection ===== -->
+  <div id="select-screen">
+    <div class="select-prompt" id="select-prompt">🌾 Player 1 — Pick your animal!</div>
+    <div class="character-grid" id="character-grid"></div>
+  </div>
+
+  <!-- ===== Tic Tac Toe ===== -->
+  <div id="ttt-screen" class="game-screen">
     <div class="player-banner">
-      <div class="player-tag">
-        <span class="tag-emoji" id="p1-emoji"></span>
-        <span id="p1-name"></span>
+      <div class="player-tag" id="ttt-p1-tag">
+        <span class="tag-emoji" id="ttt-p1-emoji"></span>
+        <span id="ttt-p1-name"></span>
       </div>
       <div class="vs-badge">VS</div>
-      <div class="player-tag">
-        <span class="tag-emoji" id="p2-emoji"></span>
-        <span id="p2-name"></span>
+      <div class="player-tag" id="ttt-p2-tag">
+        <span class="tag-emoji" id="ttt-p2-emoji"></span>
+        <span id="ttt-p2-name"></span>
       </div>
     </div>
 
-    <div id="status"></div>
+    <div class="game-status" id="ttt-status"></div>
 
-    <div id="board">
-      <div class="cell" data-index="0"></div>
-      <div class="cell" data-index="1"></div>
-      <div class="cell" data-index="2"></div>
-      <div class="cell" data-index="3"></div>
-      <div class="cell" data-index="4"></div>
-      <div class="cell" data-index="5"></div>
-      <div class="cell" data-index="6"></div>
-      <div class="cell" data-index="7"></div>
-      <div class="cell" data-index="8"></div>
+    <div id="ttt-board">
+      <div class="ttt-cell" data-index="0"></div>
+      <div class="ttt-cell" data-index="1"></div>
+      <div class="ttt-cell" data-index="2"></div>
+      <div class="ttt-cell" data-index="3"></div>
+      <div class="ttt-cell" data-index="4"></div>
+      <div class="ttt-cell" data-index="5"></div>
+      <div class="ttt-cell" data-index="6"></div>
+      <div class="ttt-cell" data-index="7"></div>
+      <div class="ttt-cell" data-index="8"></div>
     </div>
 
-    <div id="scoreboard">
+    <div class="scoreboard">
       <div class="score-box">
-        <div class="score-label" id="s1-label">Player 1</div>
-        <div class="score-value" id="score-p1">0</div>
+        <div class="score-label" id="ttt-s1-lbl">P1</div>
+        <div class="score-value" id="ttt-sc-p1">0</div>
       </div>
       <div class="score-box">
         <div class="score-label">🤝 Ties</div>
-        <div class="score-value" id="score-tie">0</div>
+        <div class="score-value" id="ttt-sc-tie">0</div>
       </div>
       <div class="score-box">
-        <div class="score-label" id="s2-label">Player 2</div>
-        <div class="score-value" id="score-p2">0</div>
+        <div class="score-label" id="ttt-s2-lbl">P2</div>
+        <div class="score-value" id="ttt-sc-p2">0</div>
       </div>
     </div>
 
     <div class="btn-row">
-      <button class="btn" id="reset-btn">🔄 New Round</button>
-      <button class="btn btn-ghost" id="reselect-btn">🐾 Change Animals</button>
+      <button class="btn"       id="ttt-reset-btn"   >🔄 New Round</button>
+      <button class="btn btn-ghost" id="ttt-reselect-btn">🐾 Change Animals</button>
     </div>
 
     <div class="kb-legend">
@@ -397,249 +437,460 @@
       <span class="kb-sep">·</span>
       <span class="kb-p2">P2: Numpad 7 8 9 / 4 5 6 / 1 2 3 ⌨</span>
     </div>
-
     <div class="footer">Every animal deserves a turn</div>
   </div>
 
+  <!-- ===== Connect Four ===== -->
+  <div id="c4-screen" class="game-screen">
+    <div class="player-banner">
+      <div class="player-tag" id="c4-p1-tag">
+        <span class="tag-emoji" id="c4-p1-emoji"></span>
+        <span id="c4-p1-name"></span>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="player-tag" id="c4-p2-tag">
+        <span class="tag-emoji" id="c4-p2-emoji"></span>
+        <span id="c4-p2-name"></span>
+      </div>
+    </div>
+
+    <div class="game-status" id="c4-status"></div>
+
+    <div id="c4-preview">
+      <div class="c4-prev-slot" data-col="0"></div>
+      <div class="c4-prev-slot" data-col="1"></div>
+      <div class="c4-prev-slot" data-col="2"></div>
+      <div class="c4-prev-slot" data-col="3"></div>
+      <div class="c4-prev-slot" data-col="4"></div>
+      <div class="c4-prev-slot" data-col="5"></div>
+      <div class="c4-prev-slot" data-col="6"></div>
+    </div>
+
+    <div id="c4-board"><!-- 42 cells injected by JS --></div>
+
+    <div class="scoreboard">
+      <div class="score-box">
+        <div class="score-label" id="c4-s1-lbl">P1</div>
+        <div class="score-value" id="c4-sc-p1">0</div>
+      </div>
+      <div class="score-box">
+        <div class="score-label">🤝 Ties</div>
+        <div class="score-value" id="c4-sc-tie">0</div>
+      </div>
+      <div class="score-box">
+        <div class="score-label" id="c4-s2-lbl">P2</div>
+        <div class="score-value" id="c4-sc-p2">0</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn"           id="c4-reset-btn"   >🔄 New Round</button>
+      <button class="btn btn-ghost" id="c4-reselect-btn">🐾 Change Animals</button>
+    </div>
+
+    <div class="kb-legend">
+      <span class="kb-p1">⌨ P1: A ← · D → · S drop</span>
+      <span class="kb-sep">·</span>
+      <span class="kb-p2">P2: Num4 ← · Num6 → · Num5 drop ⌨</span>
+    </div>
+    <div class="footer">Four in a row wins the barn!</div>
+  </div>
+
   <script>
-    const CHARACTERS = [
-      {
-        id: 'adeline', name: 'Adeline', animal: 'Dog',
-        emoji: '🐕', color: '#8B5E3C', glow: 'rgba(139,94,60,0.5)'
-      },
-      {
-        id: 'elena', name: 'Elena', animal: 'Alpaca',
-        emoji: '🦙', color: '#5A9E6F', glow: 'rgba(90,158,111,0.5)'
-      },
-      {
-        id: 'alex', name: 'Alex', animal: 'Pig',
-        emoji: '🐷', color: '#E07DAA', glow: 'rgba(224,125,170,0.5)'
-      },
-      {
-        id: 'brittany', name: 'Brittany', animal: 'Horse',
-        emoji: '🐴', color: '#C86B3C', glow: 'rgba(200,107,60,0.5)'
-      },
-      {
-        id: 'lily', name: 'Lily', animal: 'Kitten',
-        emoji: '🐱', color: '#9B8EA5', glow: 'rgba(155,142,165,0.5)'
-      },
-      {
-        id: 'kayden', name: 'Kayden', animal: 'Kangaroo',
-        emoji: '🦘', color: '#C4893D', glow: 'rgba(196,137,61,0.5)'
-      },
-      {
-        id: 'mark', name: 'Mark', animal: 'Mouse',
-        emoji: '🐭', color: '#9E9E9E', glow: 'rgba(158,158,158,0.5)'
-      },
-      {
-        id: 'beth', name: 'Beth', animal: 'Bee',
-        emoji: '🐝', color: '#F5C518', glow: 'rgba(245,197,24,0.5)'
-      },
-    ];
+  // ═══════════════════════════════════════════
+  //  SHARED DATA
+  // ═══════════════════════════════════════════
+  const CHARACTERS = [
+    { id:'adeline',  name:'Adeline',  animal:'Dog',      emoji:'🐕', color:'#8B5E3C', glow:'rgba(139,94,60,0.5)' },
+    { id:'elena',    name:'Elena',    animal:'Alpaca',   emoji:'🦙', color:'#5A9E6F', glow:'rgba(90,158,111,0.5)' },
+    { id:'alex',     name:'Alex',     animal:'Pig',      emoji:'🐷', color:'#E07DAA', glow:'rgba(224,125,170,0.5)' },
+    { id:'brittany', name:'Brittany', animal:'Horse',    emoji:'🐴', color:'#C86B3C', glow:'rgba(200,107,60,0.5)' },
+    { id:'lily',     name:'Lily',     animal:'Kitten',   emoji:'🐱', color:'#9B8EA5', glow:'rgba(155,142,165,0.5)' },
+    { id:'kayden',   name:'Kayden',   animal:'Kangaroo', emoji:'🦘', color:'#C4893D', glow:'rgba(196,137,61,0.5)' },
+    { id:'mark',     name:'Mark',     animal:'Mouse',    emoji:'🐭', color:'#9E9E9E', glow:'rgba(158,158,158,0.5)' },
+    { id:'beth',     name:'Beth',     animal:'Bee',      emoji:'🐝', color:'#F5C518', glow:'rgba(245,197,24,0.5)' },
+  ];
 
-    const WIN_MSGS = {
-      adeline:  ['🐕 Adeline wins! Who\'s a good girl?!', '🦴 Adeline fetches the victory!', '🐾 Top dog Adeline takes it!'],
-      elena:    ['🦙 Elena wins! Spit take!', '🌿 Elena chews through the competition!', '🦙 Elena alpaca-punches her way to victory!'],
-      alex:     ['🐷 Alex wins! Oink oink!', '🥓 Alex brings home the bacon!', '🐷 Alex rolls right into victory!'],
-      brittany: ['🐴 Brittany wins! Neigh-borly domination!', '🌟 Brittany gallops to glory!', '🏆 Brittany leads the whole herd!'],
-      lily:     ['🐱 Lily wins! Purr-fect play!', '🐾 Lily is the cat\'s meow!', '🎀 Lily always lands on her feet!'],
-      kayden:   ['🦘 Kayden wins! Hop to it!', '🥊 Kayden punches above the competition!', '🦘 Kayden bounces right into victory!'],
-      mark:     ['🐭 Mark wins! Squeak squeak!', '🧀 Mark scurries to victory!', '🐭 Mark outsmarts the whole barn!'],
-      beth:     ['🐝 Beth wins! Buzz buzz!', '🍯 Beth brings home the honey!', '🐝 Beth stings the competition!'],
-    };
+  const WIN_MSGS = {
+    adeline:  ["🐕 Adeline wins! Who's a good girl?!", '🦴 Adeline fetches the victory!', '🐾 Top dog Adeline takes it!'],
+    elena:    ['🦙 Elena wins! Spit take!', '🌿 Elena chews through the competition!', '🦙 Elena alpaca-punches her way to victory!'],
+    alex:     ['🐷 Alex wins! Oink oink!', '🥓 Alex brings home the bacon!', '🐷 Alex rolls right into victory!'],
+    brittany: ['🐴 Brittany wins! Neigh-borly domination!', '🌟 Brittany gallops to glory!', '🏆 Brittany leads the whole herd!'],
+    lily:     ["🐱 Lily wins! Purr-fect play!", "🐾 Lily is the cat's meow!", '🎀 Lily always lands on her feet!'],
+    kayden:   ['🦘 Kayden wins! Hop to it!', '🥊 Kayden punches above the competition!', '🦘 Kayden bounces right into victory!'],
+    mark:     ['🐭 Mark wins! Squeak squeak!', '🧀 Mark scurries to victory!', '🐭 Mark outsmarts the whole barn!'],
+    beth:     ['🐝 Beth wins! Buzz buzz!', '🍯 Beth brings home the honey!', '🐝 Beth stings the competition!'],
+  };
 
-    const WINNING_COMBOS = [
-      [0,1,2],[3,4,5],[6,7,8],
-      [0,3,6],[1,4,7],[2,5,8],
-      [0,4,8],[2,4,6]
-    ];
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-    // State
-    let players        = [null, null];  // selected CHARACTERS entries
-    let selectingP     = 0;             // 0 = P1 choosing, 1 = P2 choosing
-    let board          = Array(9).fill(null);
-    let currentPlayer  = 0;
-    let gameOver       = false;
-    let scores         = [0, 0, 0];    // [p1, p2, ties]
+  // ═══════════════════════════════════════════
+  //  TAB + CHARACTER SELECTION (shared)
+  // ═══════════════════════════════════════════
+  let activeGame = 'ttt';
+  let selPlayers = [null, null];
+  let selPhase   = 0;
 
-    // Elements
-    const selectScreen = document.getElementById('select-screen');
-    const gameScreen   = document.getElementById('game-screen');
-    const selectPrompt = document.getElementById('select-prompt');
-    const charGrid     = document.getElementById('character-grid');
-    const statusEl     = document.getElementById('status');
-    const cells        = document.querySelectorAll('.cell');
-    const resetBtn     = document.getElementById('reset-btn');
-    const reselectBtn  = document.getElementById('reselect-btn');
-    const scoreP1El    = document.getElementById('score-p1');
-    const scoreP2El    = document.getElementById('score-p2');
-    const scoreTieEl   = document.getElementById('score-tie');
-    const s1Label      = document.getElementById('s1-label');
-    const s2Label      = document.getElementById('s2-label');
+  const selectScreen = document.getElementById('select-screen');
+  const selectPrompt = document.getElementById('select-prompt');
+  const charGrid     = document.getElementById('character-grid');
 
-    // ── Character selection ──────────────────────────────────────
-    function buildGrid() {
-      charGrid.innerHTML = '';
-      CHARACTERS.forEach(char => {
-        const taken = selectingP === 1 && players[0] && players[0].id === char.id;
-        const card = document.createElement('div');
-        card.className = 'char-card' + (taken ? ' disabled' : '');
-        card.style.setProperty('--char-color', char.color);
-        card.style.setProperty('--char-glow', char.glow);
-        card.innerHTML = `
-          <span class="char-emoji">${char.emoji}</span>
-          <div class="char-name">${char.name}</div>
-          <div class="char-type">${char.animal}</div>
-        `;
-        if (!taken) card.addEventListener('click', () => selectChar(char));
-        charGrid.appendChild(card);
-      });
-    }
+  document.getElementById('tab-ttt').addEventListener('click', () => switchTab('ttt'));
+  document.getElementById('tab-c4') .addEventListener('click', () => switchTab('c4'));
 
-    function selectChar(char) {
-      players[selectingP] = char;
-      if (selectingP === 0) {
-        selectingP = 1;
-        selectPrompt.textContent = '🌻 Player 2 — Pick your animal!';
-        buildGrid();
-      } else {
-        startGame();
-      }
-    }
+  function switchTab(game) {
+    activeGame = game;
+    document.getElementById('tab-ttt').classList.toggle('active', game === 'ttt');
+    document.getElementById('tab-c4') .classList.toggle('active', game === 'c4');
+    showSelect();
+  }
 
-    // ── Game start ────────────────────────────────────────────────
-    function startGame() {
-      selectScreen.style.display = 'none';
-      gameScreen.style.display   = 'flex';
+  function showSelect() {
+    selPlayers = [null, null];
+    selPhase   = 0;
+    document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
+    selectScreen.style.display = 'flex';
+    const label = activeGame === 'ttt' ? 'Tic Tac Toe' : 'Connect Four';
+    selectPrompt.textContent = `🌾 ${label} · Player 1 — Pick your animal!`;
+    buildGrid();
+  }
 
-      document.getElementById('p1-emoji').textContent = players[0].emoji;
-      document.getElementById('p1-name').textContent  = players[0].name;
-      document.getElementById('p2-emoji').textContent = players[1].emoji;
-      document.getElementById('p2-name').textContent  = players[1].name;
+  function buildGrid() {
+    charGrid.innerHTML = '';
+    CHARACTERS.forEach(char => {
+      const taken = selPhase === 1 && selPlayers[0] && selPlayers[0].id === char.id;
+      const card  = document.createElement('div');
+      card.className = 'char-card' + (taken ? ' disabled' : '');
+      card.style.setProperty('--char-color', char.color);
+      card.style.setProperty('--char-glow',  char.glow);
+      card.innerHTML = `
+        <span class="char-emoji">${char.emoji}</span>
+        <div class="char-name">${char.name}</div>
+        <div class="char-type">${char.animal}</div>
+      `;
+      if (!taken) card.addEventListener('click', () => selectChar(char));
+      charGrid.appendChild(card);
+    });
+  }
 
-      s1Label.textContent = `${players[0].emoji} ${players[0].name}`;
-      s2Label.textContent = `${players[1].emoji} ${players[1].name}`;
-
-      resetRound();
-    }
-
-    // ── Keyboard maps ─────────────────────────────────────────────
-    // P1: Q W E / A S D / Z X C  (left side of keyboard)
-    const P1_KEYS  = ['q','w','e','a','s','d','z','x','c'];
-    // P2: Numpad 7 8 9 / 4 5 6 / 1 2 3  (use e.code to avoid conflicts)
-    const P2_CODES = ['Numpad7','Numpad8','Numpad9','Numpad4','Numpad5','Numpad6','Numpad1','Numpad2','Numpad3'];
-
-    // ── Round reset (keeps scores) ────────────────────────────────
-    function resetRound() {
-      board         = Array(9).fill(null);
-      currentPlayer = 0;
-      gameOver      = false;
-      cells.forEach((c, i) => {
-        c.className = 'cell';
-        c.innerHTML =
-          `<span class="hint h1">${P1_KEYS[i].toUpperCase()}</span>` +
-          `<span class="hint h2">${P2_CODES[i].replace('Numpad','')}</span>`;
-      });
-      const p = players[0];
-      statusEl.textContent = `${p.emoji} ${p.name} goes first!`;
-      statusEl.className   = '';
-    }
-
-    // ── Back to character select ──────────────────────────────────
-    function goReselect() {
-      players    = [null, null];
-      selectingP = 0;
-      scores     = [0, 0, 0];
-      scoreP1El.textContent  = '0';
-      scoreP2El.textContent  = '0';
-      scoreTieEl.textContent = '0';
-      selectPrompt.textContent   = '🌾 Player 1 — Pick your animal!';
-      gameScreen.style.display   = 'none';
-      selectScreen.style.display = 'flex';
+  function selectChar(char) {
+    selPlayers[selPhase] = char;
+    if (selPhase === 0) {
+      selPhase = 1;
+      const label = activeGame === 'ttt' ? 'Tic Tac Toe' : 'Connect Four';
+      selectPrompt.textContent = `🌻 ${label} · Player 2 — Pick your animal!`;
       buildGrid();
+    } else {
+      selectScreen.style.display = 'none';
+      if (activeGame === 'ttt') tttStart([...selPlayers]);
+      else                      c4Start([...selPlayers]);
     }
+  }
 
-    // ── Game logic ────────────────────────────────────────────────
-    cells.forEach(cell => cell.addEventListener('click', handleClick));
-    resetBtn.addEventListener('click', resetRound);
-    reselectBtn.addEventListener('click', goReselect);
+  // ═══════════════════════════════════════════
+  //  TIC TAC TOE
+  // ═══════════════════════════════════════════
+  const TTT_COMBOS = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  const P1_KEYS  = ['q','w','e','a','s','d','z','x','c'];
+  const P2_CODES = ['Numpad7','Numpad8','Numpad9','Numpad4','Numpad5','Numpad6','Numpad1','Numpad2','Numpad3'];
 
-    // Shared placement logic (used by both mouse clicks and keyboard)
-    function placeAt(idx) {
-      if (gameOver || board[idx] !== null) return;
+  let tttPlayers = [null,null], tttBoard = Array(9).fill(null);
+  let tttCurrent = 0, tttOver = false, tttScores = [0,0,0];
 
-      board[idx] = currentPlayer;
-      const cell = cells[idx];
-      cell.innerHTML = players[currentPlayer].emoji; // clears hint spans
-      cell.classList.add('taken', `p${currentPlayer}`);
+  const tttScreen  = document.getElementById('ttt-screen');
+  const tttStatus  = document.getElementById('ttt-status');
+  const tttCells   = document.querySelectorAll('.ttt-cell');
+  const tttP1Tag   = document.getElementById('ttt-p1-tag');
+  const tttP2Tag   = document.getElementById('ttt-p2-tag');
+  const tttScP1    = document.getElementById('ttt-sc-p1');
+  const tttScP2    = document.getElementById('ttt-sc-p2');
+  const tttScTie   = document.getElementById('ttt-sc-tie');
 
-      const result = checkWinner();
-      if (result) {
-        endGame(result.player, result.combo);
-      } else if (board.every(v => v !== null)) {
-        endGame(null, null);
+  tttCells.forEach(c => c.addEventListener('click', e => tttPlace(+e.currentTarget.dataset.index)));
+  document.getElementById('ttt-reset-btn')   .addEventListener('click', tttReset);
+  document.getElementById('ttt-reselect-btn').addEventListener('click', showSelect);
+
+  function tttStart(players) {
+    tttPlayers = players; tttScores = [0,0,0];
+    document.getElementById('ttt-p1-emoji').textContent = players[0].emoji;
+    document.getElementById('ttt-p1-name') .textContent = players[0].name;
+    document.getElementById('ttt-p2-emoji').textContent = players[1].emoji;
+    document.getElementById('ttt-p2-name') .textContent = players[1].name;
+    document.getElementById('ttt-s1-lbl').textContent = `${players[0].emoji} ${players[0].name}`;
+    document.getElementById('ttt-s2-lbl').textContent = `${players[1].emoji} ${players[1].name}`;
+    tttScP1.textContent = tttScP2.textContent = tttScTie.textContent = '0';
+    tttScreen.style.display = 'flex';
+    tttReset();
+  }
+
+  function tttReset() {
+    tttBoard = Array(9).fill(null); tttCurrent = 0; tttOver = false;
+    tttCells.forEach((c, i) => {
+      c.className = 'ttt-cell';
+      c.innerHTML = `<span class="hint h1">${P1_KEYS[i].toUpperCase()}</span>`
+                  + `<span class="hint h2">${P2_CODES[i].replace('Numpad','')}</span>`;
+    });
+    tttStatus.textContent = `${tttPlayers[0].emoji} ${tttPlayers[0].name} goes first!`;
+    tttStatus.className   = 'game-status';
+    tttTags();
+  }
+
+  function tttTags() {
+    tttP1Tag.classList.toggle('active-turn', tttCurrent === 0);
+    tttP2Tag.classList.toggle('active-turn', tttCurrent === 1);
+  }
+
+  function tttPlace(idx) {
+    if (tttOver || tttBoard[idx] !== null) return;
+    tttBoard[idx] = tttCurrent;
+    const cell = tttCells[idx];
+    cell.innerHTML = tttPlayers[tttCurrent].emoji;
+    cell.classList.add('taken', `p${tttCurrent}`);
+
+    const win = tttCheckWin();
+    if (win)                           { tttEnd(win.player, win.combo); }
+    else if (tttBoard.every(v => v !== null)) { tttEnd(null, null); }
+    else {
+      tttCurrent = tttCurrent === 0 ? 1 : 0;
+      const p = tttPlayers[tttCurrent];
+      tttStatus.textContent = `${p.emoji} ${p.name}'s turn!`;
+      tttStatus.className   = 'game-status';
+      tttTags();
+    }
+  }
+
+  function tttCheckWin() {
+    for (const combo of TTT_COMBOS) {
+      const [a,b,c] = combo;
+      if (tttBoard[a] !== null && tttBoard[a] === tttBoard[b] && tttBoard[a] === tttBoard[c])
+        return { player: tttBoard[a], combo };
+    }
+    return null;
+  }
+
+  function tttEnd(winnerIdx, combo) {
+    tttOver = true;
+    tttP1Tag.classList.remove('active-turn');
+    tttP2Tag.classList.remove('active-turn');
+    if (winnerIdx !== null) {
+      tttStatus.textContent = pick(WIN_MSGS[tttPlayers[winnerIdx].id]);
+      tttStatus.className   = 'game-status winner';
+      combo.forEach(i => tttCells[i].classList.add('winning'));
+      tttScores[winnerIdx]++;
+    } else {
+      tttStatus.textContent = "🤝 It's a tie — the barnyard draws!";
+      tttStatus.className   = 'game-status winner';
+      tttScores[2]++;
+    }
+    tttScP1.textContent = tttScores[0];
+    tttScP2.textContent = tttScores[1];
+    tttScTie.textContent= tttScores[2];
+  }
+
+  // ═══════════════════════════════════════════
+  //  CONNECT FOUR
+  // ═══════════════════════════════════════════
+  const C4R = 6, C4C = 7;
+
+  let c4Players = [null,null], c4Board = Array(C4R * C4C).fill(null);
+  let c4Current = 0, c4Cursor = 3, c4Over = false, c4Scores = [0,0,0];
+
+  const c4Screen   = document.getElementById('c4-screen');
+  const c4Status   = document.getElementById('c4-status');
+  const c4BoardEl  = document.getElementById('c4-board');
+  const c4PrevSlots= document.querySelectorAll('.c4-prev-slot');
+  const c4P1Tag    = document.getElementById('c4-p1-tag');
+  const c4P2Tag    = document.getElementById('c4-p2-tag');
+  const c4ScP1     = document.getElementById('c4-sc-p1');
+  const c4ScP2     = document.getElementById('c4-sc-p2');
+  const c4ScTie    = document.getElementById('c4-sc-tie');
+
+  // Build 42 cells
+  let c4Cells = [];
+  for (let r = 0; r < C4R; r++) {
+    for (let c = 0; c < C4C; c++) {
+      const el = document.createElement('div');
+      el.className = 'c4-cell';
+      el.dataset.row = r; el.dataset.col = c;
+      el.addEventListener('click',      () => c4Drop(c));
+      el.addEventListener('mouseenter', () => { if (!c4Over) c4MoveCursor(c); });
+      c4BoardEl.appendChild(el);
+      c4Cells.push(el);
+    }
+  }
+
+  // Preview slot interactions
+  c4PrevSlots.forEach(slot => {
+    const col = +slot.dataset.col;
+    slot.addEventListener('click',      () => { c4MoveCursor(col); c4Drop(col); });
+    slot.addEventListener('mouseenter', () => { if (!c4Over) c4MoveCursor(col); });
+  });
+
+  document.getElementById('c4-reset-btn')   .addEventListener('click', c4Reset);
+  document.getElementById('c4-reselect-btn').addEventListener('click', showSelect);
+
+  function c4Start(players) {
+    c4Players = players; c4Scores = [0,0,0];
+    document.getElementById('c4-p1-emoji').textContent = players[0].emoji;
+    document.getElementById('c4-p1-name') .textContent = players[0].name;
+    document.getElementById('c4-p2-emoji').textContent = players[1].emoji;
+    document.getElementById('c4-p2-name') .textContent = players[1].name;
+    document.getElementById('c4-s1-lbl').textContent = `${players[0].emoji} ${players[0].name}`;
+    document.getElementById('c4-s2-lbl').textContent = `${players[1].emoji} ${players[1].name}`;
+    c4ScP1.textContent = c4ScP2.textContent = c4ScTie.textContent = '0';
+    c4Screen.style.display = 'flex';
+    c4Reset();
+  }
+
+  function c4Reset() {
+    c4Board = Array(C4R * C4C).fill(null);
+    c4Current = 0; c4Cursor = 3; c4Over = false;
+    c4Cells.forEach(el => { el.className = 'c4-cell'; el.textContent = ''; });
+    c4Status.textContent = `${c4Players[0].emoji} ${c4Players[0].name} goes first!`;
+    c4Status.className   = 'game-status';
+    c4Tags(); c4DrawPreview();
+  }
+
+  function c4Tags() {
+    c4P1Tag.classList.toggle('active-turn', c4Current === 0);
+    c4P2Tag.classList.toggle('active-turn', c4Current === 1);
+  }
+
+  function c4ColFull(col) { return c4Board[col] !== null; } // row 0 = top
+
+  function c4MoveCursor(col) {
+    c4Cursor = col;
+    c4DrawPreview();
+  }
+
+  function c4DrawPreview() {
+    c4PrevSlots.forEach((slot, i) => {
+      const full   = c4ColFull(i);
+      const active = (i === c4Cursor) && !c4Over;
+      slot.classList.toggle('cursor-here', active);
+      slot.classList.toggle('col-full',    full);
+      if (active && !full) {
+        slot.innerHTML = `<span>${c4Players[c4Current].emoji}</span><span class="drop-arr">▼</span>`;
+      } else if (full) {
+        slot.innerHTML = '<span style="font-size:1rem">🚫</span>';
       } else {
-        currentPlayer = currentPlayer === 0 ? 1 : 0;
-        const p = players[currentPlayer];
-        statusEl.textContent = `${p.emoji} ${p.name}'s turn!`;
-        statusEl.className   = '';
-      }
-    }
-
-    function handleClick(e) {
-      // e.currentTarget is always the .cell div even when a child hint span is clicked
-      placeAt(parseInt(e.currentTarget.dataset.index));
-    }
-
-    // Keyboard handler — P1 keys only fire on P1's turn, numpad only on P2's turn
-    document.addEventListener('keydown', e => {
-      if (!players[0] || !players[1] || gameOver) return;
-
-      const p1Idx = P1_KEYS.indexOf(e.key.toLowerCase());
-      if (p1Idx !== -1 && currentPlayer === 0) {
-        e.preventDefault();
-        placeAt(p1Idx);
-        return;
-      }
-
-      const p2Idx = P2_CODES.indexOf(e.code);
-      if (p2Idx !== -1 && currentPlayer === 1) {
-        e.preventDefault();
-        placeAt(p2Idx);
+        slot.innerHTML = '';
       }
     });
+    // Column highlight
+    c4Cells.forEach(el => {
+      const col = +el.dataset.col;
+      el.classList.toggle('col-hi', col === c4Cursor && !el.classList.contains('filled') && !c4Over);
+    });
+  }
 
-    function checkWinner() {
-      for (const combo of WINNING_COMBOS) {
-        const [a, b, c] = combo;
-        if (board[a] !== null && board[a] === board[b] && board[a] === board[c])
-          return { player: board[a], combo };
-      }
-      return null;
+  function c4Drop(col) {
+    if (c4Over || c4ColFull(col)) return;
+    // find lowest empty row
+    let row = -1;
+    for (let r = C4R - 1; r >= 0; r--) {
+      if (c4Board[r * C4C + col] === null) { row = r; break; }
     }
+    if (row === -1) return;
 
-    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    c4Board[row * C4C + col] = c4Current;
+    const el = c4Cells[row * C4C + col];
+    el.textContent = c4Players[c4Current].emoji;
+    el.classList.add('filled', `p${c4Current}`, 'dropping');
+    el.classList.remove('col-hi');
+    el.addEventListener('animationend', () => el.classList.remove('dropping'), { once: true });
 
-    function endGame(winnerIdx, combo) {
-      gameOver = true;
-      if (winnerIdx !== null) {
-        const char = players[winnerIdx];
-        statusEl.textContent = pick(WIN_MSGS[char.id]);
-        statusEl.className   = 'winner';
-        combo.forEach(i => cells[i].classList.add('winning'));
-        scores[winnerIdx]++;
+    const win = c4CheckWin();
+    if (win) {
+      c4End(win.player, win.cells);
+    } else if (c4Board.every(v => v !== null)) {
+      c4End(null, null);
+    } else {
+      c4Current = c4Current === 0 ? 1 : 0;
+      const p = c4Players[c4Current];
+      c4Status.textContent = `${p.emoji} ${p.name}'s turn!`;
+      c4Status.className   = 'game-status';
+      c4Tags(); c4DrawPreview();
+    }
+  }
+
+  function c4CheckWin() {
+    const b = c4Board, R = C4R, C = C4C;
+    for (let r = 0; r < R; r++) {
+      for (let c = 0; c < C; c++) {
+        const v = b[r*C+c];
+        if (v === null) continue;
+        // Horizontal →
+        if (c+3 < C && b[r*C+c+1]===v && b[r*C+c+2]===v && b[r*C+c+3]===v)
+          return { player:v, cells:[[r,c],[r,c+1],[r,c+2],[r,c+3]] };
+        // Vertical ↓
+        if (r+3 < R && b[(r+1)*C+c]===v && b[(r+2)*C+c]===v && b[(r+3)*C+c]===v)
+          return { player:v, cells:[[r,c],[r+1,c],[r+2,c],[r+3,c]] };
+        // Diagonal ↘
+        if (r+3 < R && c+3 < C && b[(r+1)*C+c+1]===v && b[(r+2)*C+c+2]===v && b[(r+3)*C+c+3]===v)
+          return { player:v, cells:[[r,c],[r+1,c+1],[r+2,c+2],[r+3,c+3]] };
+        // Diagonal ↙
+        if (r+3 < R && c-3 >= 0 && b[(r+1)*C+c-1]===v && b[(r+2)*C+c-2]===v && b[(r+3)*C+c-3]===v)
+          return { player:v, cells:[[r,c],[r+1,c-1],[r+2,c-2],[r+3,c-3]] };
+      }
+    }
+    return null;
+  }
+
+  function c4End(winnerIdx, cells) {
+    c4Over = true;
+    c4P1Tag.classList.remove('active-turn');
+    c4P2Tag.classList.remove('active-turn');
+    c4PrevSlots.forEach(s => { s.innerHTML=''; s.classList.remove('cursor-here','col-full'); });
+    c4Cells.forEach(el => el.classList.remove('col-hi'));
+
+    if (winnerIdx !== null) {
+      c4Status.textContent = pick(WIN_MSGS[c4Players[winnerIdx].id]);
+      c4Status.className   = 'game-status winner';
+      cells.forEach(([r,c]) => c4Cells[r*C4C+c].classList.add('winning'));
+      c4Scores[winnerIdx]++;
+    } else {
+      c4Status.textContent = "🤝 It's a tie — the barnyard draws!";
+      c4Status.className   = 'game-status winner';
+      c4Scores[2]++;
+    }
+    c4ScP1.textContent  = c4Scores[0];
+    c4ScP2.textContent  = c4Scores[1];
+    c4ScTie.textContent = c4Scores[2];
+  }
+
+  // ═══════════════════════════════════════════
+  //  KEYBOARD ROUTING
+  // ═══════════════════════════════════════════
+  document.addEventListener('keydown', e => {
+    if (activeGame === 'ttt') {
+      if (!tttPlayers[0] || tttOver) return;
+      const p1i = P1_KEYS.indexOf(e.key.toLowerCase());
+      if (p1i !== -1 && tttCurrent === 0) { e.preventDefault(); tttPlace(p1i); return; }
+      const p2i = P2_CODES.indexOf(e.code);
+      if (p2i !== -1 && tttCurrent === 1) { e.preventDefault(); tttPlace(p2i); }
+    } else {
+      if (!c4Players[0] || c4Over) return;
+      if (c4Current === 0) {
+        if      (e.key.toLowerCase() === 'a') { e.preventDefault(); c4MoveCursor(Math.max(0, c4Cursor-1)); }
+        else if (e.key.toLowerCase() === 'd') { e.preventDefault(); c4MoveCursor(Math.min(6, c4Cursor+1)); }
+        else if (e.key.toLowerCase() === 's') { e.preventDefault(); c4Drop(c4Cursor); }
       } else {
-        statusEl.textContent = '🤝 It\'s a tie — the barnyard draws!';
-        statusEl.className   = 'winner';
-        scores[2]++;
+        if      (e.code === 'Numpad4') { e.preventDefault(); c4MoveCursor(Math.max(0, c4Cursor-1)); }
+        else if (e.code === 'Numpad6') { e.preventDefault(); c4MoveCursor(Math.min(6, c4Cursor+1)); }
+        else if (e.code === 'Numpad5' || e.code === 'Numpad2') { e.preventDefault(); c4Drop(c4Cursor); }
       }
-      scoreP1El.textContent  = scores[0];
-      scoreP2El.textContent  = scores[1];
-      scoreTieEl.textContent = scores[2];
     }
+  });
 
-    // ── Init ──────────────────────────────────────────────────────
-    buildGrid();
+  // ═══════════════════════════════════════════
+  //  INIT
+  // ═══════════════════════════════════════════
+  showSelect();
   </script>
 </body>
 </html>
